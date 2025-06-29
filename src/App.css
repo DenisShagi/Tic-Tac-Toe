@@ -48,3 +48,7 @@ html {
 .symbol--o {
   color: green;
 }
+
+.reset-btn-container {
+  margin-top: 10px;
+}

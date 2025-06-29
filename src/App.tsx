@@ -30,6 +30,7 @@ function App() {
 	const [cells, setCells] = useState<Cell[]>(Array(9).fill(null))
 	const [currentStep, setCurrentState] = useState<Symbol>(SYMBOL_O)
 	const [winnerSeq, setWinnerSeq] = useState<number[] | undefined>()
+	const [isDraw, setIsDraw] = useState<string | undefined>()
 	const getSymbolClassName = (symbol: string) => {
 		if (symbol === SYMBOL_O) return 'symbol--o'
 		if (symbol === SYMBOL_X) return 'symbol--x'
@@ -44,11 +45,14 @@ function App() {
 		if (cells[idx] || winnerSeq)  {
 			return
 		}
+
 		const cellsCopy = cells.slice()
 		cellsCopy[idx] = currentStep
 
 		const winner = computeWinner(cellsCopy)
-
+		if (!cellsCopy.includes(null) && !winner) {
+			setIsDraw('Ничья')
+		}
 		setCells(cellsCopy)
 		setCurrentState(currentStep === SYMBOL_O ? SYMBOL_X : SYMBOL_O)
 		setWinnerSeq(winner)
@@ -57,12 +61,19 @@ function App() {
 	const resetState = () => {
 		setCells(Array(9).fill(null))
 		setWinnerSeq(undefined)
+		setIsDraw(undefined)
 	}
+	console.log(cells)
 	return (
 		<div className='game'>
 			<div className='game-info'>
-				{winnerSeq ? 'Победитель' : 'Ход'}{' '}
-				{renderSymbol(winnerSymbol ?? currentStep)}
+				{isDraw ? (
+					isDraw
+				) : winnerSeq ? (
+					<>Победитель: {renderSymbol(winnerSymbol)}</>
+				) : (
+					<>Ход: {renderSymbol(currentStep)}</>
+				)}
 			</div>
 			<div className='game-field'>
 				{cells.map((symbol, idx) => {
@@ -79,7 +90,7 @@ function App() {
 				})}
 			</div>
 			<div className='reset-btn-container'>
-			<button onClick={resetState}>Сбросить</button>
+				<button onClick={resetState}>Сбросить</button>
 			</div>
 		</div>
 	)
